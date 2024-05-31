@@ -2,7 +2,7 @@ import os
 import numpy as np
 import pickle
 import gzip
-from PIL import Image
+from PIL import Image, ImageEnhance
 import json
 import pylab
 
@@ -21,24 +21,40 @@ def convert_images_to_mnist_format(directory):
         for filename in files:
             if filename.endswith(('.jpg', '.jpeg', '.png')):
                 img = Image.open(os.path.join(root, filename)).convert('L')
+                contrast = ImageEnhance.Contrast(img)
+                img = contrast.enhance(1)  # 对比度增强因子可以根据需要调整
+                # enhanced_image.show()
                 resized_img = img.resize((28, 28))
                 arr = np.array(resized_img)
                 # if filename.endswith(('.jpg', '.jpeg')):
                 arr_1 = arr.flatten()
+
+                # 找到大面积像素点
+                # 计算每个元素的出现次数
+                counts = np.bincount(arr_1)
+
+                # 找出出现次数最多的元素
+                max_count = max(counts)
+                most_frequent_elements = np.where(counts == max_count)[0]
+
+                # 分析数据分布，最简单的方式是找出出现次数最多的元素
+                print("元素:",most_frequent_elements,"出现次数:",max_count)
+
+
                 # 找到最小值和最大值
                 min_val = int(min(arr_1))
                 max_val = int(max(arr_1))
                 middle_value = (min_val + max_val) *0.55
-                print('======================',min_val,max_val,(middle_value))
+                # print('===========',min_val,max_val,(middle_value))
 
-                # threshold = middle_value
-                # arr[arr < threshold] = 0
-                # arr[arr >= threshold] = 255
+                threshold = most_frequent_elements[0]*0.89
+                arr[arr <= threshold] = 0
+                arr[arr > threshold] = 255
                 # else:
                 #     threshold = 250
                 #     arr[arr < threshold] = 0
                 #     arr[arr >= threshold] = 255
-                normalized_arr =1-arr.astype(np.float32) / 255
+                normalized_arr =1- arr.astype(np.float32) / 255
                 
                 # 图片处理后保存时所用数据
                 image_from_array = Image.fromarray((normalized_arr * 255).astype(np.uint8))
