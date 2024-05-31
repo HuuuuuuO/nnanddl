@@ -37,7 +37,15 @@ def load_data():
     """
     f = gzip.open('mnist.pkl.gz', 'rb')
     training_data, validation_data, test_data = pickle.load(f, encoding="latin1")
+    # print(test_data[0])
+    # print(test_data[1])
     f.close()
+
+    f_mydata = gzip.open('mydata.pkl.gz', 'rb')
+    test_data = pickle.load(f_mydata, encoding="latin1")
+    f_mydata.close()
+
+    
     return (training_data, validation_data, test_data)
 
 def load_data_wrapper():
@@ -76,3 +84,7 @@ def vectorized_result(j):
     e = np.zeros((10, 1))
     e[j] = 1.0
     return e
+
+
+
+load_data_wrapper()

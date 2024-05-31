@@ -15,6 +15,7 @@ and omits many desirable features.
 #### Libraries
 # Standard library
 import random
+import json
 
 # Third-party libraries
 import numpy as np
@@ -93,7 +94,7 @@ class Network(object):
         if test_data:
             test_data = list(test_data)
             n_test = len(test_data)
-
+        best_accuracy =0
         for j in range(epochs):
             random.shuffle(training_data)
             mini_batches = [
@@ -103,7 +104,12 @@ class Network(object):
             for mini_batch in mini_batches:
                 self.update_mini_batch(mini_batch, eta)
             if test_data:
-                print("Epoch {} : {} / {}".format(j,self.evaluate(test_data),n_test))
+                n_evaluate=self.evaluate(test_data)
+                current_accuracy =round(n_evaluate/n_test*100,2)
+                if current_accuracy > best_accuracy:
+                    best_accuracy = current_accuracy
+                    self.save('mynet1')
+                print("Epoch {} : {} / {}  {}%  {}%".format(j,n_evaluate,n_test,current_accuracy,best_accuracy))
             else:
                 print("Epoch {} complete".format(j))
 
@@ -165,14 +171,33 @@ class Network(object):
         network outputs the correct result. Note that the neural
         network's output is assumed to be the index of whichever
         neuron in the final layer has the highest activation."""
+        test_data = list(test_data)
+        n_test = len(test_data)
         test_results = [(np.argmax(self.feedforward(x)), y)
                         for (x, y) in test_data]
-        return sum(int(x == y) for (x, y) in test_results)
+        n_evaluate=sum(int(x == y) for (x, y) in test_results)
+        current_accuracy =round(n_evaluate/n_test*100,2)
+        print(test_results)
+        print("{} / {}  {}%".format(n_evaluate,n_test,current_accuracy))
+
+        return n_evaluate
 
     def cost_derivative(self, output_activations, y):
         """Return the vector of partial derivatives \partial C_x /
         \partial a for the output activations."""
         return (output_activations-y)
+
+    
+    def save(self, filename):
+        """Save the neural network to the file ``filename``."""
+        data = {"sizes": self.sizes,
+                "weights": [w.tolist() for w in self.weights],
+                "biases": [b.tolist() for b in self.biases],
+                }
+        f = open(filename, "w")
+        json.dump(data, f)
+        f.close()
+
 
 #### Miscellaneous functions
 def sigmoid(z):
@@ -183,7 +208,19 @@ def sigmoid_prime(z):
     """Derivative of the sigmoid function."""
     return sigmoid(z)*(1-sigmoid(z))
 
+#### Loading a Network
+def load_net(filename):
+    """Load a neural network from the file ``filename``.  Returns an
+    instance of Network.
 
+    """
+    f = open(filename, "r")
+    data = json.load(f)
+    f.close()
+    net = Network(data["sizes"])
+    net.weights = [np.array(w) for w in data["weights"]]
+    net.biases = [np.array(b) for b in data["biases"]]
+    return net
 
 
 
