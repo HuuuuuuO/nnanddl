@@ -5,6 +5,52 @@ import gzip
 from PIL import Image, ImageEnhance
 import json
 import pylab
+import matplotlib.pyplot as plt
+
+def count_distribution(arr):
+    """
+    计算数组中每个数值的出现次数。
+    
+    参数:
+    arr - 输入数组
+    
+    返回:
+    hist - 每个数值出现次数的字典
+    """
+    hist = {}
+    for num in arr:
+        if num in hist:
+            hist[num] += 1
+        else:
+            hist[num] = 1
+    return hist
+
+def plot_distribution(hist):
+    """
+    绘制数组分布图。
+    
+    参数:
+    hist - 每个数值出现次数的字典
+    """
+    # 创建一个列表用于存储所有的数值
+    values = list(hist.keys())
+    # 创建一个列表用于存储对应的频率
+    frequencies = [hist[value] for value in values]
+    
+    # 设置图表的标题、x轴标签和y轴标签
+    plt.title('Array Distribution')
+    plt.xlabel('Value (0-255)')
+    plt.ylabel('Frequency')
+    
+    # 绘制直方图
+    plt.bar(values, frequencies)
+    
+    # 显示图表
+    plt.show()
+
+
+
+
 
 def convert_images_to_mnist_format(directory):
     images_data = []
@@ -29,6 +75,15 @@ def convert_images_to_mnist_format(directory):
                 # if filename.endswith(('.jpg', '.jpeg')):
                 arr_1 = arr.flatten()
 
+
+                # 计算分布
+                hist = count_distribution(arr_1)
+
+                # 绘制分布图
+                plot_distribution(hist)
+
+
+
                 # 找到大面积像素点
                 # 计算每个元素的出现次数
                 counts = np.bincount(arr_1)
@@ -47,18 +102,19 @@ def convert_images_to_mnist_format(directory):
                 middle_value = (min_val + max_val) *0.55
                 # print('===========',min_val,max_val,(middle_value))
 
-                threshold = most_frequent_elements[0]*0.89
-                arr[arr <= threshold] = 0
-                arr[arr > threshold] = 255
+                # threshold = most_frequent_elements[0]*0.89
+                # arr[arr <= threshold] = 0
+                # arr[arr > threshold] = 255
                 # else:
                 #     threshold = 250
                 #     arr[arr < threshold] = 0
                 #     arr[arr >= threshold] = 255
-                normalized_arr =1- arr.astype(np.float32) / 255
+                normalized_arr =arr.astype(np.float32) / 255
                 
                 # 图片处理后保存时所用数据
                 image_from_array = Image.fromarray((normalized_arr * 255).astype(np.uint8))
                 images_data.append(image_from_array)
+                
 
                 # 图片数据，归一化数据拉平成一维数组
                 flattened_arr = normalized_arr.flatten()
@@ -84,6 +140,7 @@ def save_images(images_data, label_data, directory):
         os.makedirs(sub_dir, exist_ok=True)
         
         image.save(f'{sub_dir}/image_{label}_{i}.png')
+        show_image(f'{sub_dir}/image_{label}_{i}.png')
 
 def load_data():
 
@@ -111,3 +168,4 @@ if __name__ == '__main__':
     print(label_data_out.shape)
     save_as_pkl_gz([ array_data_out, label_data_out], pkl_path)
     save_images(images_data, label_data, directory_output)
+    
