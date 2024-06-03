@@ -173,12 +173,35 @@ class Network(object):
         neuron in the final layer has the highest activation."""
         test_data = list(test_data)
         n_test = len(test_data)
+        
+
+
         test_results = [(np.argmax(self.feedforward(x)), y)
                         for (x, y) in test_data]
         n_evaluate=sum(int(x == y) for (x, y) in test_results)
         current_accuracy =round(n_evaluate/n_test*100,2)
-        print(test_results)
-        print("{} / {}  {}%".format(n_evaluate,n_test,current_accuracy))
+
+        # 步骤1: 筛选并统计出第二个值一样的每一项
+        second_value_counts = {}  # 用于存储第二个值相同的项的数量
+        for item in test_results:
+            second_value = item[1]
+            if second_value in second_value_counts:
+                second_value_counts[second_value].append(item)
+            else:
+                second_value_counts[second_value] = [item]
+
+        # 步骤2: 求出每一项中第一个值等于第二个值的比例
+        result = {}
+        for second_value, items in second_value_counts.items():
+            first_equal_second_count = sum(1 for item in items if item[0] == second_value)
+            total_items = len(items)
+            ratio = first_equal_second_count / total_items if total_items!= 0 else 0
+            result[second_value] = ratio
+        for k,v in result.items():
+            print("{} : {}%".format(k,round(v*100,2)))
+
+
+        # print("{} / {}  {}%".format(n_evaluate,n_test,current_accuracy))
 
         return n_evaluate
 

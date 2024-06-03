@@ -15,19 +15,20 @@ import pylab
 # 输出第j张图片
 print('你要读第几个库的手写数字-->0-50000个训练集;1-10000个验证集;2-10000个测试集:')
 i = int(input())
-print('你要读取这个库中的第几张图片:')
-j = int(input())
+while 1:
+    print('你要读取这个库中的第几张图片:')
+    j = int(input())
 
-# 以二进制只读格式读取图片及索引文件
-with gzip.open('mnist.pkl.gz', 'rb') as f:
-    img = pickle.load(f, encoding='latin1')
-img_x = img[i][0][j].reshape(28, 28)
-img_id = img[i][1][j]
+    # 以二进制只读格式读取图片及索引文件
+    with gzip.open('mnist.pkl.gz', 'rb') as f:
+        img = pickle.load(f, encoding='latin1')
+    img_x = img[i][0][j].reshape(28, 28)
+    img_id = img[i][1][j]
 
-print('这个数字是：'+str(img_id))
-pylab.imshow(img_x)
-pylab.gray()
-pylab.show()
+    print('这个数字是：'+str(img_id))
+    pylab.imshow(img_x)
+    pylab.gray()
+    pylab.show()
 
 ###### 步骤2: 用mnist_loader封装的方法输出矩阵化后的手写数字
 import mnist_loader
