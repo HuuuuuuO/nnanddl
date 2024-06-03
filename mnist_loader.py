@@ -41,7 +41,11 @@ def load_data():
     # print(test_data[1])
     f.close()
 
-    f_mydata = gzip.open('mydata.pkl.gz', 'rb')
+    f_mydata_1 = gzip.open('mydata_train.pkl.gz', 'rb')
+    training_data = pickle.load(f_mydata_1, encoding="latin1")
+    f_mydata_1.close()
+
+    f_mydata = gzip.open('mydata_test.pkl.gz', 'rb')
     test_data = pickle.load(f_mydata, encoding="latin1")
     f_mydata.close()
 

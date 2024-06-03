@@ -108,7 +108,7 @@ class Network(object):
                 current_accuracy =round(n_evaluate/n_test*100,2)
                 if current_accuracy > best_accuracy:
                     best_accuracy = current_accuracy
-                    self.save('mynet1')
+                    self.save('mynet/mynet_{}'.format(current_accuracy))
                 print("Epoch {} : {} / {}  {}%  {}%".format(j,n_evaluate,n_test,current_accuracy,best_accuracy))
             else:
                 print("Epoch {} complete".format(j))
