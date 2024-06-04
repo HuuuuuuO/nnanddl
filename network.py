@@ -180,7 +180,7 @@ class Network(object):
                         for (x, y) in test_data]
         n_evaluate=sum(int(x == y) for (x, y) in test_results)
         current_accuracy =round(n_evaluate/n_test*100,2)
-
+        print(test_results)
         # 步骤1: 筛选并统计出第二个值一样的每一项
         second_value_counts = {}  # 用于存储第二个值相同的项的数量
         for item in test_results:

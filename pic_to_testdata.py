@@ -29,6 +29,8 @@ def convert_images_to_mnist_format(directory):
                 resized_img = img.resize((28, 28))
                 arr = np.array(resized_img)
                 arr_1 = arr.flatten()
+                # hist=count_distribution(arr_1)
+                # plot_distribution(hist)
 
                 # 计算每个元素的出现次数
                 counts = np.bincount(arr_1)
@@ -43,6 +45,11 @@ def convert_images_to_mnist_format(directory):
 
                 arr[(arr > threshold_1) & (arr < threshold_2)] = 255
                 arr[arr < threshold_1] = 0
+
+
+                # threshold=127
+                # arr[arr > threshold] = 255
+                # arr[arr < threshold] = 0
               
                 normalized_arr = 1- arr.astype(np.float32) / 255
                 
@@ -94,10 +101,7 @@ def show_image(image_path):
 
 
 
-
-
 def count_distribution(arr):
-
     hist = {}
     for num in arr:
         if num in hist:
@@ -108,31 +112,24 @@ def count_distribution(arr):
     return hist
 
 def plot_distribution(hist):
-   
-    # 创建一个列表用于存储所有的数值
     values = list(hist.keys())
-    # 创建一个列表用于存储对应的频率
+    # 存储对应的频率
     frequencies = [hist[value] for value in values]
 
-    # 设置图表的标题、x轴标签和y轴标签
     plt.title('Array Distribution')
     plt.xlabel('Value (0-255)')
     plt.ylabel('Frequency')
 
-    # 绘制直方图
     plt.bar(values, frequencies)
 
-    # 显示图表
     plt.show()
 
 
 def array_split(array_data,label_data):
-    # 随机排序数组
     combined = list(zip(array_data, label_data))
     random.shuffle(combined)
     array_data[:], label_data[:] = zip(*combined)
 
-    # 计算训练集和测试集的大小
     train_size = int(len(array_data) * 5 / 6)
     test_size = len(array_data) - train_size
 
